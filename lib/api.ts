@@ -17,7 +17,7 @@ export class PurchaseApiStack extends cdk.Stack {
   private createProductSearchLambda() {
     return new lambdaNodejs.NodejsFunction(this, "ProductSearchApiFunction", {
       functionName: "product-search-api-func",
-      entry: "src/lambda/product-search.ts",
+      entry: "src/lambda/api/product-search.ts",
       architecture: lambda.Architecture.ARM_64,
       runtime: lambda.Runtime.NODEJS_20_X,
       handler: "handler",
@@ -27,7 +27,7 @@ export class PurchaseApiStack extends cdk.Stack {
   private createProductPurchaseLambda() {
     return new lambdaNodejs.NodejsFunction(this, "ProductPurchaseApiFunction", {
       functionName: "product-purchase-api-func",
-      entry: "src/lambda/product-purchase.ts",
+      entry: "src/lambda/api/product-purchase.ts",
       architecture: lambda.Architecture.ARM_64,
       runtime: lambda.Runtime.NODEJS_20_X,
       handler: "handler",
