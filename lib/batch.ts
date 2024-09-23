@@ -14,20 +14,27 @@ export class DeliveryBatchStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props: PurchaseBatchStackProps) {
     super(scope, id, props)
 
-    const deliveryFunc = this.createDeliveryBatchLambda()
+    const deliveryFunc = this.createDeliveryBatchLambda(props.deliveryOrderTable)
     props.deliveryOrderTable.grantReadWriteData(deliveryFunc)
 
     this.createCronScheduler(deliveryFunc)
   }
 
-  private createDeliveryBatchLambda() {
-    return new lambdaNodejs.NodejsFunction(this, "DeliveryBatchFunction", {
+  private createDeliveryBatchLambda(deliveryOrderTable: dynamodb.Table) {
+    const func = new lambdaNodejs.NodejsFunction(this, "DeliveryBatchFunction", {
       functionName: "delivery-batch-func",
       entry: "src/lambda/batch/delivery.ts",
       architecture: lambda.Architecture.ARM_64,
       runtime: lambda.Runtime.NODEJS_20_X,
       handler: "handler",
+      environment: {
+        DELIVERY_ORDER_TABLE_NAME: deliveryOrderTable.tableName,
+      },
     })
+
+    deliveryOrderTable.grantReadWriteData(func)
+
+    return func
   }
 
   private createCronScheduler(deliveryFunc: lambda.IFunction) {
@@ -35,7 +42,6 @@ export class DeliveryBatchStack extends cdk.Stack {
       ruleName: "delivery-batch-rule",
       schedule: events.Schedule.cron({
         minute: "0/1", // 1分ごとに実行
-        // hour: "9", minute: "0"
       }),
     })
     rule.addTarget(new targets.LambdaFunction(deliveryFunc))

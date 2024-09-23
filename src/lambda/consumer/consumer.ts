@@ -21,6 +21,7 @@ const insertOrder = async (productId: string) => {
       Item: {
         ID: { S: uuid.v4() },
         PRODUCT_ID: { N: `${productId}` },
+        STATUS: { S: "WAITING" },
         ORDERED_DATETIME: { S: new Date().toISOString() },
       },
     }),

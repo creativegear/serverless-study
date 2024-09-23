@@ -46,7 +46,7 @@ export class DeliveryOrderConsumerStack extends cdk.Stack {
   }
 
   private createDynamoDBTable() {
-    return new dynamodb.Table(this, "DeliveryOrderTable", {
+    const table = new dynamodb.Table(this, "DeliveryOrderTable", {
       tableName: "delivery-order",
       partitionKey: {
         name: "ID",
@@ -55,5 +55,13 @@ export class DeliveryOrderConsumerStack extends cdk.Stack {
       billingMode: dynamodb.BillingMode.PAY_PER_REQUEST,
       removalPolicy: RemovalPolicy.DESTROY,
     })
+
+    table.addGlobalSecondaryIndex({
+      indexName: "DeliveryStatusIndex",
+      partitionKey: { name: "STATUS", type: dynamodb.AttributeType.STRING },
+      projectionType: dynamodb.ProjectionType.ALL,
+    })
+
+    return table
   }
 }
