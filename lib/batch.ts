@@ -3,13 +3,20 @@ import * as events from "aws-cdk-lib/aws-events"
 import * as targets from "aws-cdk-lib/aws-events-targets"
 import * as lambda from "aws-cdk-lib/aws-lambda"
 import * as lambdaNodejs from "aws-cdk-lib/aws-lambda-nodejs"
+import type * as dynamodb from "aws-cdk-lib/aws-dynamodb"
 import type { Construct } from "constructs"
 
+interface PurchaseBatchStackProps extends cdk.StackProps {
+  deliveryOrderTable: dynamodb.Table
+}
+
 export class DeliveryBatchStack extends cdk.Stack {
-  constructor(scope: Construct, id: string, props?: cdk.StackProps) {
+  constructor(scope: Construct, id: string, props: PurchaseBatchStackProps) {
     super(scope, id, props)
 
     const deliveryFunc = this.createDeliveryBatchLambda()
+    props.deliveryOrderTable.grantReadWriteData(deliveryFunc)
+
     this.createCronScheduler(deliveryFunc)
   }
 
