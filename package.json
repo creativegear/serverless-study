@@ -1,0 +1,42 @@
+{
+  "name": "serverless-study",
+  "version": "0.1.0",
+  "bin": {
+    "serverless-study": "bin/main.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc -w",
+    "test": "jest",
+    "cdk": "cdk",
+    "format:check": "biome format bin src test lib",
+    "format:fix": "biome format bin src test lib --write",
+    "lint:check": "biome lint bin src test lib",
+    "lint:fix": "biome lint --apply bin src test lib",
+    "lint:fix:force": "biome lint --apply-unsafe bin src test lib",
+    "aws:login": "bash ./shell/aws-login.sh ithink-staging ",
+    "cdk:bootstrap": "tsc && cdk bootstrap --profile ithink-staging",
+    "cdk:list": "tsc && cdk list --profile ithink-staging",
+    "cdk:diff": "tsc && cdk diff --profile ithink-staging",
+    "cdk:deploy": "tsc && cdk deploy --profile ithink-staging",
+    "cdk:destroy": "tsc && cdk destroy --profile ithink-staging"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.5.12",
+    "@types/node": "22.5.4",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.2.5",
+    "aws-cdk": "2.159.1",
+    "ts-node": "^10.9.2",
+    "typescript": "~5.6.2",
+    "@biomejs/biome": "1.7.3"
+  },
+  "dependencies": {
+    "aws-cdk-lib": "2.159.1",
+    "constructs": "^10.0.0",
+    "source-map-support": "^0.5.21",
+    "@aws-sdk/client-dynamodb": "^3.496.0",
+    "@aws-sdk/client-lambda": "^3.529.1",
+    "@aws-sdk/util-dynamodb": "^3.529.1"
+  }
+}
