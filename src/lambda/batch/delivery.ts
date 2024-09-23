@@ -30,7 +30,7 @@ const updateOrder = async (items: Record<string, AttributeValue>[]) => {
       new UpdateItemCommand({
         TableName: process.env.DELIVERY_ORDER_TABLE_NAME,
         Key: {
-          id: item.ID,
+          ID: item.ID,
         },
         UpdateExpression: "set #STATUS = :STATUS",
         ExpressionAttributeNames: {
