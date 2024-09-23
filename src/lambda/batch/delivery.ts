@@ -3,8 +3,12 @@ import type { Context, EventBridgeEvent } from "aws-lambda"
 
 const dynamoDBClient = new DynamoDBClient({})
 
+// 配送バッチ用のLambda関数
 export const handler = async (_event: EventBridgeEvent<"Scheduled Event", unknown>, _context: Context): Promise<void> => {
+  // 配送ステータスが「WAITING」の配送依頼を取得
   const orders = await selectDeliveryOrders()
+
+  // 配送ステータスを「COMPLETED」に更新
   await updateOrder(orders.Items!)
 }
 
@@ -18,7 +22,7 @@ const selectDeliveryOrders = async () => {
         "#STATUS": "STATUS",
       },
       ExpressionAttributeValues: {
-        ":STATUS": { S: "WAITING" },
+        ":STATUS": { S: "WAITING" }, // 配送ステータスが「WAITING」のものを取得
       },
     }),
   )
@@ -37,7 +41,7 @@ const updateOrder = async (items: Record<string, AttributeValue>[]) => {
           "#STATUS": "STATUS",
         },
         ExpressionAttributeValues: {
-          ":STATUS": { S: "COMPLETED" },
+          ":STATUS": { S: "COMPLETED" }, // 配送ステータスを「COMPLETED」に更新
         },
       }),
     )

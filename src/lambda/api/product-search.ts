@@ -1,3 +1,4 @@
+// 商品検索API
 export const handler = async () => {
   const products = [
     {

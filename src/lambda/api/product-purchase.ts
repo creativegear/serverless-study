@@ -3,6 +3,7 @@ import { SQSClient, SendMessageCommand } from "@aws-sdk/client-sqs"
 
 const sqsClient = new SQSClient()
 
+// 商品購入API
 export const handler = async (event: APIGatewayEvent) => {
   const requestBody = JSON.parse(event.body!)
   const productId = requestBody.productId

@@ -14,11 +14,14 @@ export class DeliveryOrderConsumerStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props)
 
+    // 配送依頼用のキューを作成
     this.deliveryOrderQueue = this.createQueue()
-    this.deliveryOrderTable = this.createDynamoDBTable()
-    const consumerLambda = this.createConsumerLambda(this.deliveryOrderTable)
 
-    consumerLambda.addEventSource(new eventSource.SqsEventSource(this.deliveryOrderQueue))
+    // 配送用のテーブルを作成
+    this.deliveryOrderTable = this.createDynamoDBTable()
+
+    // 配送依頼用のLambda関数を作成
+    this.createConsumerLambda(this.deliveryOrderTable)
   }
 
   private createConsumerLambda(deliveryOrderTable: dynamodb.Table) {
@@ -33,7 +36,11 @@ export class DeliveryOrderConsumerStack extends cdk.Stack {
       },
     })
 
+    // 配送依頼用のLambda関数にDynamoDBの読み書き権限を付与
     deliveryOrderTable.grantReadWriteData(func)
+
+    // SQSメッセージ受信で、Lambda関数をトリガーするように設定
+    func.addEventSource(new eventSource.SqsEventSource(this.deliveryOrderQueue))
 
     return func
   }
@@ -46,6 +53,7 @@ export class DeliveryOrderConsumerStack extends cdk.Stack {
   }
 
   private createDynamoDBTable() {
+    // 配送依頼用のテーブルを作成
     const table = new dynamodb.Table(this, "DeliveryOrderTable", {
       tableName: "delivery-order",
       partitionKey: {
@@ -56,6 +64,7 @@ export class DeliveryOrderConsumerStack extends cdk.Stack {
       removalPolicy: RemovalPolicy.DESTROY,
     })
 
+    // 配送ステータスで検索できるようにインデックスを追加
     table.addGlobalSecondaryIndex({
       indexName: "DeliveryStatusIndex",
       partitionKey: { name: "STATUS", type: dynamodb.AttributeType.STRING },

@@ -13,9 +13,13 @@ export class PurchaseApiStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props: PurchaseApiStackProps) {
     super(scope, id, props)
 
+    // 商品検索API用のLambda関数を作成
     const productSearchFunc = this.createProductSearchLambda()
+
+    // 商品購入API用のLambda関数を作成
     const productPurchaseFunc = this.createProductPurchaseLambda(props.deliveryOrderQueue)
 
+    // API Gatewayを作成
     this.createApiGateway(productSearchFunc, productPurchaseFunc)
   }
 
@@ -41,6 +45,7 @@ export class PurchaseApiStack extends cdk.Stack {
       },
     })
 
+    // 商品購入API用のLambda関数にSQSの送信権限を付与
     deliveryOrderQueue.grantSendMessages(func)
 
     return func
@@ -56,6 +61,7 @@ export class PurchaseApiStack extends cdk.Stack {
       },
     })
 
+    // 商品検索APIのエンドポイントを作成
     const productResource = api.root.addResource("product")
     productResource.addResource("search").addMethod("GET", new apigw.LambdaIntegration(productSearchFunc))
     productResource.addResource("purchase").addMethod("POST", new apigw.LambdaIntegration(productPurchaseFunc))

@@ -14,9 +14,10 @@ export class DeliveryBatchStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props: PurchaseBatchStackProps) {
     super(scope, id, props)
 
+    // 配送バッチ用のLambda関数を作成
     const deliveryFunc = this.createDeliveryBatchLambda(props.deliveryOrderTable)
-    props.deliveryOrderTable.grantReadWriteData(deliveryFunc)
 
+    // 配送バッチ用のスケジューラを作成
     this.createCronScheduler(deliveryFunc)
   }
 
@@ -32,6 +33,7 @@ export class DeliveryBatchStack extends cdk.Stack {
       },
     })
 
+    // 配送バッチ用のLambda関数にDynamoDBの読み書き権限を付与
     deliveryOrderTable.grantReadWriteData(func)
 
     return func
